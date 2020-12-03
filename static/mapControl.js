@@ -7,6 +7,20 @@
       ),
       type: 'icon'
     });
+    var iconStyles = new ol.style.Style({
+        image: new ol.style.Icon({
+          anchor: [0.5, 1],
+          src: 'http://maps.google.com/mapfiles/ms/micons/blue.png',
+        })
+        /*image: new ol.style.Circle({
+          radius: 7,
+          fill: new ol.style.Fill({color: 'green'}),
+          stroke: new ol.style.Stroke({
+            color: 'white',
+            width: 2,
+          })
+        })*/
+    });
     var markerLasalle = new ol.Feature({
       geometry: new ol.geom.Point(
         ol.proj.fromLonLat([-73.63, 45.43])
@@ -16,6 +30,7 @@
     var vectorSource = new ol.source.Vector();
     var vectorLayer = new ol.layer.Vector({
         source: vectorSource,
+        style: iconStyles,
         updateWhileAnimating: true,
         updateWhileInteracting: true
     })
@@ -36,23 +51,3 @@
          loadTilesWhileAnimating: true,
     });
     vectorSource.addFeatures([markerCenter, markerLasalle])
-    /*var markerCenter = new ol.Feature({
-      geometry: new ol.geom.Point(
-        ol.proj.fromLonLat([-73.65269, 45.48858])
-      ),
-      type: 'icon'
-    });
-    var markerVectorLayer = new ol.layer.Vector({
-        source: new ol.source.Vector({
-          features: [markerCenter]
-        })
-    });
-    var markerLasalle = new ol.feature.Vector({
-      geometry: new ol.geom.Point(
-        ol.proj.fromLonLat([-74, 42])
-      ),
-      type: 'icon'
-    });
-    map.addLayer(markerVectorLayer);
-    markerVectorLayer.addFeature(markerLasalle);
-    */
