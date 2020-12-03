@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Map
+{% endblock %}
+
+{% block main %}
+    <style>
+        #map {
+            width:90%;
+            height:400px;
+        }
+    </style>
+    <title>Map</title>
+    <div id="map">
+
+    </div>
+    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+    <script defer src="static/mapControl.js"></script>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block main %}
+    <form action="/register" method="post">
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control" id="username" name="username" placeholder="Username" type="text">
+        </div>
+        <div class="form-group">
+            <input class="form-control" id="password" name="password" placeholder="Password" type="password">
+        </div>
+        <div class="form-group">
+            <input class="form-control" id="confirmation" name="confirmation" placeholder="Password (again)" type="password">
+        </div>
+        <button class="btn btn-primary" id="submit" type="submit">Register</button>
+    </form>
+    <script>
+        //todo write validation with regexp for name & password
+        let nameInput = document.querySelector("#username");
+        let passwordInput = document.querySelector("#password");
+        let confirmInput = document.querySelector("#confirmation");
+
+        let submitButton = document.querySelector("#submit");
+        // by default submit button will be disabled
+        submitButton.disabled = true;
+
+        function validName() {
+            let nameRegex = /^[a-zA-Z]{1,}[a-zA-Z]+[0-9]*$/;
+            if (nameInput.value !== '') {
+               let isValid = nameInput.value.match(nameRegex);
+               if (!isValid) {
+                   nameInput.focus();
+                   return false;
+               }
+               return true;
+            }
+        }
+
+        function validPassword() {
+            let passRegex = /^[a-zA-Z]+[0-9]*.{6,255}$/;
+            if (passwordInput.value !== '') {
+               let isValid = passwordInput.value.match(passRegex);
+               if (!isValid) {
+                   //passwordInput.focus();
+                   return false;
+               }
+               return true;
+            }
+        }
+
+        function samePassword() {
+           return confirmInput.value === passwordInput.value ? true : false;
+        }
+
+        nameInput.onkeyup = function () {
+            console.log(`disabled: name- ${validName()}`)
+            submitButton.disabled = validName()&&confirmInput.value !== '' ? false : true;
+        }
+        passwordInput.onkeyup = function (){
+            console.log(`disabled: password-${validPassword()}`)
+            submitButton.disabled = confirmInput.value !== '' && validPassword() && samePassword() ? false : true;
+        }
+        confirmInput.onkeyup = function (){
+            console.log(` same- ${samePassword()}`)
+            submitButton.disabled = confirmInput.value !== '' && validPassword() && samePassword() ? false : true;
+        }
+    </script>
+{% endblock %}

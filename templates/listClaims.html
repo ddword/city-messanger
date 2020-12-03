@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    List of claims
+{% endblock %}
+
+{% block main %}
+    <div class="row">
+        <h5>List of claims</h5>
+    </div>
+    <div class="row">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Message</th>
+                    <th>Category</th>
+                    <th>Address</th>
+                    <th>File</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for message in messages %}
+                <tr>
+                    <td>{{transaction["title"]}}</td>
+                    <td>{{transaction["message"]}}</td>
+                    <td>{{transaction["category"]}}</td>
+                    <td>{{transaction["address"]}}</td>
+                    <td>{{transaction["file"]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
