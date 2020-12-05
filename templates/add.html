@@ -8,21 +8,25 @@
     <div class="row">
         <h5>What happens?</h5>
     </div>
-    <form action="/add" method="post">
+    <form action="{{action}}" method="post">
         <div class="form-group row">
-            <input autocomplete="off" autofocus class="form-control col-sm-6" id="title" name="title" placeholder="Title" type="text">
-            <label for="type" class="col-sm-2 col-form-label">Category:</label>
-            <select autocomplete="off" autofocus class="form-control col-sm-2" id="type" name="theme" onchange="onChange()">
-                {% for stock in stocks %}
-                    <option>{{stock["symbol"]}}</option>
+            <input autocomplete="off" autofocus class="form-control col-sm-6" id="title" name="title" placeholder="Title*" type="text">
+            <label for="category" class="col-sm-2 col-form-label text-left">Category*:</label>
+            <select autocomplete="off" autofocus class="form-control col-sm-2" id="category" name="category" onchange="onChange()">
+                {% for option in options %}
+                    <option>{{option}}</option>
                 {% endfor %}
             </select>
         </div>
         <div class="form-group row">
-            <textarea class="form-control col-sm-9" id="message" name="message" rows="4">Enter your text</textarea>
+            <textarea class="form-control col-sm-9" id="message" name="message" rows="4" placeholder="Enter your text*"></textarea>
         </div>
         <div class="form-group row">
-            <input class="form-control col-sm-9" id="address" name="address" placeholder="Address" type="text" rows="2">
+            <label for="city" class="col-sm-1 col-form-label text-left">City*</label>
+            <input class="form-control col-sm-3" id="city" name="city" value="Montreal">
+        </div>
+        <div class="form-group row">
+            <textarea class="form-control col-sm-9" id="address" name="address" placeholder="Address*" type="text" rows="2"></textarea>
         </div>
         <div class="form-group row">
             <label for="image">Choose image of issue:</label>

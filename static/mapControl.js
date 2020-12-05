@@ -10,7 +10,7 @@
     var iconStyles = new ol.style.Style({
         image: new ol.style.Icon({
           anchor: [0.5, 1],
-          src: 'http://maps.google.com/mapfiles/ms/micons/blue.png',
+          src: 'static/blue.png',
         })
         /*image: new ol.style.Circle({
           radius: 7,

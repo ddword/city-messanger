@@ -5,11 +5,12 @@ from flask import Flask, flash, jsonify, redirect, render_template, request, ses
 from flask_session import Session
 from flask_cors import CORS, cross_origin
 import datetime
+import numpy as np
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import apology, login_required, get_time
-from models import usersDB
+from helpers import apology, login_required, get_GPS
+from models import usersDB, messageDB, addressesDB
 
 # Configure application
 app = Flask(__name__)
@@ -45,8 +46,8 @@ dbb = sqlite3.connect("claims.db")
 db = dbb.cursor()
 # connect.execute('INSERT INTO users (username, hash) VALUES (?, ?)')
 db.execute("CREATE TABLE IF NOT EXISTS 'users' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'username' TEXT NOT NULL, 'hash' TEXT NOT NULL);")
-db.execute("CREATE TABLE IF NOT EXISTS 'messages' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'user_id' INTEGER NOT NULL, 'title' TEXT NOT NULL, 'message' MEDIUMTEXT NOT NULL, 'file' VARCHAR(255), 'addresse_id' INTEGER NOT NULL, FOREIGN KEY('user_id') REFERENCES 'users'('id'), FOREIGN KEY('addresse_id') REFERENCES 'addresses'('id'));")
-db.execute("CREATE TABLE IF NOT EXISTS 'addresses' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'message_id' INTEGER NOT NULL, 'addresse' TEXT NOT NULL, 'coordinates' VARCHAR(255) NOT NULL, 'organization' TEXT, FOREIGN KEY('message_id') REFERENCES 'messages'('id'));")
+db.execute("CREATE TABLE IF NOT EXISTS 'messages' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'user_id' INTEGER NOT NULL, 'title' TEXT NOT NULL, 'message' MEDIUMTEXT NOT NULL, 'file' VARCHAR(255), 'addresse_id' INTEGER NOT NULL,'category' TEXT NOT NULL, FOREIGN KEY('user_id') REFERENCES 'users'('id'), FOREIGN KEY('addresse_id') REFERENCES 'addresses'('id'));")
+db.execute("CREATE TABLE IF NOT EXISTS 'addresses' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'message_id' INTEGER NOT NULL, 'addresse' TEXT NOT NULL, 'coordinates' VARCHAR(255) NOT NULL, 'organization' TEXT);")
 
 # Make sure API key is set
 '''if not os.environ.get("API_KEY"):
@@ -66,13 +67,30 @@ def index():
     response.headers["Set-Cookie"] = "sessionId=user_id; HttpOnly; SameSite=None; Secure"
     return response
 
-@app.route("/add")
+@app.route("/add",  methods=["GET", "POST"])
 @login_required
 def add():
     """Form add message"""
-
     user_id = session["user_id"]
-    return render_template("add.html")
+    options = np.array(['Alert COVID', 'Bruit/Bagarre', 'Cadavre', 'Clochard', 'Graffiti', 'Mobilier urbain', 'Nid-de-poule', 'Propreté', 'Trottoir glissant', 'Zone dangereuse', 'Zone de construction'])
+
+    if request.method == "POST":
+        if not (request.form.get("title") and request.form.get("message") and request.form.get("city") and request.form.get("address")):
+            return apology("you should fill all required* fields of form", 401)
+
+        gps = get_GPS(request.form.get("city"), request.form.get("address"))
+        print(f"Here RESS!!!{gps.get('lat')},{gps.get('lon')}{gps.get('address')}")
+        ''' 2) add them with address to the table addresses
+            3) then add message content + address_id to messages table
+        '''
+        with sqlite3.connect('claims.db') as conn:
+            adb = addressesDB(conn)
+            mb = messageDB(user_id, conn)
+        #   4) write function in .route("/claims") to display all added addresses in Montreal area
+
+        return redirect("/claims")
+    else:
+        return render_template("add.html", action="/add", options=options)
 
 
 @app.route("/claims")
@@ -101,7 +119,7 @@ def login():
         # Ensure password was submitted
         elif not request.form.get("password"):
             return apology("must provide password", 402)
-
+        '''Todo: rewrite it with set_id'''
         # Query database for username
         db.execute("SELECT * FROM users WHERE username = :username", {"username":request.form.get("username")})
         # rows = db.fetchall() #[(1, 'Fred', 'pbkdf2:sha256:150000$T7JKIKJn$076d0cb229398ad3c5340b858aaea6a636c41e6ca85359a046f83489d6eb386c')]

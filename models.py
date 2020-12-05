@@ -35,3 +35,34 @@ class messageDB:
     def get_messages(self):
         self.c.execute("SELECT * FROM messages WHERE user_id = :id", {"id": self.id})
         return self.c.fetchone()
+
+    # add new message to the messages list of user
+    def add_message(self, **kwargs):
+        sql = "INSERT INTO messages (message, title, category) VALUES (?, ?)"
+        self.c.execute(sql, **kwargs)
+        self.conn.commit()
+
+    def edit_message(self, message):
+        self.c.execute("UPDATE messages SET message = :message WHERE id = :id", {"message": message, "id": self.id})
+        self.conn.commit()
+
+class addressesDB:
+    def __init__(self, conn):
+        self.id = ''
+        self.conn = conn
+        self.c = conn.cursor()
+
+    # get list of addresses
+    def getAllAddresses(self):
+        self.c.execute("SELECT * FROM addresses")
+        return self.c.fetchone()
+
+    # add new message to the messages list of user
+    def add_address(self, **kwargs):
+        sql = "INSERT INTO addresses (...) VALUES (?, ?)"
+        self.c.execute(sql, **kwargs)
+        self.conn.commit()
+
+    def edit_address(self, address):
+        self.c.execute("UPDATE addresses SET address = :address WHERE id = :id", {"address": address, "id": self.id})
+        self.conn.commit()

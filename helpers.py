@@ -39,6 +39,29 @@ def login_required(f):
     return decorated_function
 
 
+def get_GPS(city, address):
+    '''Contact API nominatim of openstreetmap, example
+        https://nominatim.openstreetmap.org/search?q=1535+%20rue+Ducas,+Montreal&format=json&polygon=1&addressdetails=1'''
+    try:
+        response = requests.get(f"https://nominatim.openstreetmap.org/search?q="
+                                f"{urllib.parse.quote_plus(address)},+{urllib.parse.quote_plus(city)}"
+                                f"&format=json&polygon=1&addressdetails=1")
+        response.raise_for_status()
+    except requests.RequestException:
+        return None
+
+    # Parse response
+    try:
+        res = response.json()
+        return {
+            "lat": res[0].get('lat'),
+            "lon": res[0].get('lon'),
+            "address": res[0].get('display_name'),
+        }
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
 def get_time():
     now = datetime.now()
     return now.strftime('%Y-%m-%d %H:%M:%S UTC')
