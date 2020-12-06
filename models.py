@@ -37,9 +37,21 @@ class messageDB:
         return self.c.fetchone()
 
     # add new message to the messages list of user
-    def add_message(self, **kwargs):
-        sql = "INSERT INTO messages (message, title, category) VALUES (?, ?)"
-        self.c.execute(sql, **kwargs)
+    def add_message(self, address, **kwargs):
+        print('Here', kwargs)
+        query = self.c.execute("SELECT id FROM addresses WHERE address =:address", (address, ))
+        address_id = int(query.fetchone()[0])
+        print(f'Address id: {address_id}')
+        params = {
+            'address_id': address_id,
+            'user_id': self.id,
+            'title': kwargs.get('title'),
+            'category': kwargs.get('category'),
+            'message': kwargs.get('message'),
+            'file': kwargs.get('file')
+        }
+        sql = "INSERT INTO messages (address_id, user_id, title, category, message, file) VALUES (:address_id, :user_id, :title, :category, :message, :file)"
+        self.c.execute(sql, params)
         self.conn.commit()
 
     def edit_message(self, message):
@@ -58,9 +70,10 @@ class addressesDB:
         return self.c.fetchone()
 
     # add new message to the messages list of user
-    def add_address(self, **kwargs):
-        sql = "INSERT INTO addresses (...) VALUES (?, ?)"
-        self.c.execute(sql, **kwargs)
+    def add_address(self, *args):
+        sql = "INSERT INTO addresses (latitude, longitude, address, organization) VALUES (?, ?, ?, ?)"
+        print('KWARGS', args)
+        self.c.execute(sql, args)
         self.conn.commit()
 
     def edit_address(self, address):

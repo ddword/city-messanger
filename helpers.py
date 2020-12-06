@@ -41,7 +41,8 @@ def login_required(f):
 
 def get_GPS(city, address):
     '''Contact API nominatim of openstreetmap, example
-        https://nominatim.openstreetmap.org/search?q=1535+%20rue+Ducas,+Montreal&format=json&polygon=1&addressdetails=1'''
+        https://nominatim.openstreetmap.org/search?q=135+pilkington+avenue,+birmingham&format=json&polygon=1&addressdetails=1
+    '''
     try:
         response = requests.get(f"https://nominatim.openstreetmap.org/search?q="
                                 f"{urllib.parse.quote_plus(address)},+{urllib.parse.quote_plus(city)}"

@@ -47,7 +47,7 @@ db = dbb.cursor()
 # connect.execute('INSERT INTO users (username, hash) VALUES (?, ?)')
 db.execute("CREATE TABLE IF NOT EXISTS 'users' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'username' TEXT NOT NULL, 'hash' TEXT NOT NULL);")
 db.execute("CREATE TABLE IF NOT EXISTS 'messages' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'user_id' INTEGER NOT NULL, 'title' TEXT NOT NULL, 'message' MEDIUMTEXT NOT NULL, 'file' VARCHAR(255), 'addresse_id' INTEGER NOT NULL,'category' TEXT NOT NULL, FOREIGN KEY('user_id') REFERENCES 'users'('id'), FOREIGN KEY('addresse_id') REFERENCES 'addresses'('id'));")
-db.execute("CREATE TABLE IF NOT EXISTS 'addresses' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'message_id' INTEGER NOT NULL, 'addresse' TEXT NOT NULL, 'coordinates' VARCHAR(255) NOT NULL, 'organization' TEXT);")
+db.execute("CREATE TABLE IF NOT EXISTS 'addresses' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'addresse' TEXT NOT NULL, 'latitude' VARCHAR(64) NOT NULL, 'longitude' VARCHAR(64) NOT NULL, 'organization' TEXT);")
 
 # Make sure API key is set
 '''if not os.environ.get("API_KEY"):
@@ -72,20 +72,29 @@ def index():
 def add():
     """Form add message"""
     user_id = session["user_id"]
-    options = np.array(['Alert COVID', 'Bruit/Bagarre', 'Cadavre', 'Clochard', 'Graffiti', 'Mobilier urbain', 'Nid-de-poule', 'Propreté', 'Trottoir glissant', 'Zone dangereuse', 'Zone de construction'])
+    options = np.array(['Alert COVID', 'Bruit/Bagarre', 'Cadavre', 'Clochard',
+                        'Graffiti', 'Mobilier urbain', 'Nid-de-poule', 'Propreté',
+                        'Trottoir glissant', 'Zone dangereuse', 'Zone de construction'])
 
     if request.method == "POST":
-        if not (request.form.get("title") and request.form.get("message") and request.form.get("city") and request.form.get("address")):
+        if not (request.form.get("title") and request.form.get("message")
+                and request.form.get("city") and request.form.get("address")):
             return apology("you should fill all required* fields of form", 401)
 
         gps = get_GPS(request.form.get("city"), request.form.get("address"))
-        print(f"Here RESS!!!{gps.get('lat')},{gps.get('lon')}{gps.get('address')}")
-        ''' 2) add them with address to the table addresses
-            3) then add message content + address_id to messages table
-        '''
+
         with sqlite3.connect('claims.db') as conn:
+            latitude = gps.get('lat')
+            longitude = gps.get('lon')
+            address = request.form.get("address")
+            organization = request.form.get("company")
+
             adb = addressesDB(conn)
+            adb.add_address(latitude, longitude, address, organization)
+
             mb = messageDB(user_id, conn)
+            mb.add_message(address, title=request.form.get("title"), category=request.form.get("category"),
+                           message=request.form.get("message"), file=request.form.get("file"))
         #   4) write function in .route("/claims") to display all added addresses in Montreal area
 
         return redirect("/claims")
