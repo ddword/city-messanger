@@ -5,6 +5,26 @@
 {% endblock %}
 
 {% block main %}
+<style>
+    table {
+        width: 100%;
+        margin-bottom: 1rem;
+        text-align: left;
+        border-collapse: collapse;
+        border-spacing: 2px;
+        border-color: grey;
+    }
+    table thead {
+        display: table-header-group;
+        vertical-align: middle;
+        border-color: inherit;
+    }
+    table tbody {
+        display: table-row-group;
+        vertical-align: middle;
+        border-color: inherit;
+    }
+</style>
     <div class="row">
         <h5>List of claims</h5>
     </div>
@@ -21,13 +41,11 @@
             </thead>
             <tbody>
                 {% for message in messages %}
-                <tr>
-                    <td>{{transaction["title"]}}</td>
-                    <td>{{transaction["message"]}}</td>
-                    <td>{{transaction["category"]}}</td>
-                    <td>{{transaction["address"]}}</td>
-                    <td>{{transaction["file"]}}</td>
-                </tr>
+                    <tr>
+                        {% for context in message %}
+                            <td>{{ context }}</td>
+                        {% endfor %}
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>

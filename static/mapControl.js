@@ -1,5 +1,10 @@
+    // get points data from data-attribute
+    var container = document.querySelector("#map");
+    var data = container.getAttribute("data-points");
+    var points = JSON.parse(data);
+    console.log('Points', points);
     var attribution = new ol.control.Attribution({
-         collapsible: false
+        collapsible: false
     });
     var markerCenter = new ol.Feature({
       geometry: new ol.geom.Point(
@@ -12,14 +17,6 @@
           anchor: [0.5, 1],
           src: 'static/blue.png',
         })
-        /*image: new ol.style.Circle({
-          radius: 7,
-          fill: new ol.style.Fill({color: 'green'}),
-          stroke: new ol.style.Stroke({
-            color: 'white',
-            width: 2,
-          })
-        })*/
     });
     var markerLasalle = new ol.Feature({
       geometry: new ol.geom.Point(
@@ -28,6 +25,27 @@
       type: 'icon'
     });
     var vectorSource = new ol.source.Vector();
+    /* example of the pattern:*/
+    // var coordinate = [lon, lat];
+    var markers = [];
+    var setMarker = function(lon, lat) {
+        return new ol.Feature({
+            geometry: new ol.geom.Point(
+                ol.proj.fromLonLat([lon, lat])
+            ),
+            type: 'v-icon'
+        });
+        // vectorSource.addFeature(marker);
+    }
+    points.forEach(function(point){
+        point = Array.from(point);
+        console.log('Mark Points', point, Number(point[2]))
+        markers.push(setMarker(Number(point[2]),Number(point[3])))
+    })
+    console.log('Markers', markers)
+    console.log('Compare default markers addFeatures', [markerCenter, markerLasalle])
+    // vectorSource.addFeature(markers)
+    vectorSource.addFeatures([markerCenter, markerLasalle])
     var vectorLayer = new ol.layer.Vector({
         source: vectorSource,
         style: iconStyles,
@@ -50,4 +68,3 @@
          ],
          loadTilesWhileAnimating: true,
     });
-    vectorSource.addFeatures([markerCenter, markerLasalle])

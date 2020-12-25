@@ -33,8 +33,11 @@ class messageDB:
 
     # get list messages of user
     def get_messages(self):
-        self.c.execute("SELECT * FROM messages WHERE user_id = :id", {"id": self.id})
-        return self.c.fetchone()
+        sql = "SELECT title, category, message, latitude, longitude, address, organization, file FROM messages \
+        LEFT JOIN addresses ON messages.address_id = addresses.id \
+        WHERE messages.user_id = :id"
+        self.c.execute(sql, {"id": self.id})
+        return self.c.fetchall()
 
     # add new message to the messages list of user
     def add_message(self, address, **kwargs):
@@ -67,13 +70,13 @@ class addressesDB:
     # get list of addresses
     def getAllAddresses(self):
         self.c.execute("SELECT * FROM addresses")
-        return self.c.fetchone()
+        return self.c.fetchall()
 
     # add new message to the messages list of user
-    def add_address(self, *args):
-        sql = "INSERT INTO addresses (latitude, longitude, address, organization) VALUES (?, ?, ?, ?)"
-        print('KWARGS', args)
-        self.c.execute(sql, args)
+    def add_address(self, **kwargs):
+        sql = "INSERT INTO addresses (latitude, longitude, address, organization) VALUES (:latitude, :longitude, :address, :organization)"
+        print('KWARGS', kwargs)
+        self.c.execute(sql, kwargs)
         self.conn.commit()
 
     def edit_address(self, address):

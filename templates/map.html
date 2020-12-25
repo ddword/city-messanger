@@ -12,9 +12,10 @@
         }
     </style>
     <title>Map</title>
-    <div id="map">
-
-    </div>
+    {% if points %}
+        <div id="map" data-points="{{ points }}">
+        </div>
+   {% endif %}
     <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
     <script defer src="static/mapControl.js"></script>
 {% endblock %}

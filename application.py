@@ -6,6 +6,7 @@ from flask_session import Session
 from flask_cors import CORS, cross_origin
 import datetime
 import numpy as np
+import json
 from tempfile import mkdtemp
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -61,7 +62,15 @@ def index():
     """index, map with points of claims"""
 
     user_id = session["user_id"]
-    response = make_response(render_template("map.html"))
+    with sqlite3.connect('claims.db') as conn:
+        adb = addressesDB(conn)
+        tpls = adb.getAllAddresses()
+        points = [list(tpl) for tpl in tpls]
+        # save and convert data to json if data will be parsed in js, not as python object, not by jinja reader
+        # Todo: stringify also other data response which you get from sqlite and parse it in js/jinja file.
+        points = json.dumps(points)
+        print(f'!!!Address: {points}')
+    response = make_response(render_template("map.html", points=points))
 
     # ignore warning on localhost about SameSite - it will work with https
     response.headers["Set-Cookie"] = "sessionId=user_id; HttpOnly; SameSite=None; Secure"
@@ -87,16 +96,17 @@ def add():
             latitude = gps.get('lat')
             longitude = gps.get('lon')
             address = request.form.get("address")
+            # replace NULL by "None"
             organization = request.form.get("company")
-
+            if organization == '':
+                organization = "None"
             adb = addressesDB(conn)
-            adb.add_address(latitude, longitude, address, organization)
+            adb.add_address(latitude=latitude, longitude=longitude, address=address, organization=organization)
 
             mb = messageDB(user_id, conn)
             mb.add_message(address, title=request.form.get("title"), category=request.form.get("category"),
                            message=request.form.get("message"), file=request.form.get("file"))
         #   4) write function in .route("/claims") to display all added addresses in Montreal area
-
         return redirect("/claims")
     else:
         return render_template("add.html", action="/add", options=options)
@@ -106,9 +116,13 @@ def add():
 @login_required
 def claims():
     """List of claims"""
-
     user_id = session["user_id"]
-    return render_template("listClaims.html")
+
+    with sqlite3.connect('claims.db') as conn:
+        mdb = messageDB(user_id, conn)
+        messages = mdb.get_messages()
+        print(f'Messages {messages}')
+        return render_template("listClaims.html", messages=messages)
 
 
 @app.route("/login", methods=["GET", "POST"])
