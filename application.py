@@ -91,6 +91,8 @@ def add():
             return apology("you should fill all required* fields of form", 401)
 
         gps = get_GPS(request.form.get("city"), request.form.get("address"))
+        if not gps:
+            return apology("The address doesn't exist", 403)
 
         with sqlite3.connect('claims.db') as conn:
             latitude = gps.get('lat')
@@ -144,11 +146,11 @@ def login():
             return apology("must provide password", 402)
         '''Todo: rewrite it with set_id'''
         # Query database for username
-        db.execute("SELECT * FROM users WHERE username = :username", {"username":request.form.get("username")})
+        db.execute("SELECT * FROM users WHERE username = :username", {"username": request.form.get("username")})
         # rows = db.fetchall() #[(1, 'Fred', 'pbkdf2:sha256:150000$T7JKIKJn$076d0cb229398ad3c5340b858aaea6a636c41e6ca85359a046f83489d6eb386c')]
         rows = db.fetchone()
-
-        print(f'ROWS {rows[2]}{len(rows)}')
+        if not rows:
+            return apology("error, this user doesn't exist", 404)
         # Ensure username exists and password is correct, use count() instead len() to define length for sqlite3.Cursor object
         if len(rows) == 0 or not check_password_hash(rows[2], request.form.get("password")):
             return apology("invalid username and/or password", 403)

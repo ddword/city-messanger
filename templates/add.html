@@ -14,7 +14,7 @@
         </div>
         <div class="form-group row">
             <label for="category" class="col-sm-2 col-form-label text-left">Category*:</label>
-            <select autocomplete="off" autofocus class="form-control col-sm-2" id="category" name="category" onchange="onChange()">
+            <select autocomplete="off" autofocus class="form-control col-sm-2" id="category" name="category" onchange="onChange(value)">
                 {% for option in options %}
                     <option>{{option}}</option>
                 {% endfor %}
@@ -27,8 +27,11 @@
             <label for="city" class="col-sm-1 col-form-label text-left">City*</label>
             <input class="form-control col-sm-3" id="city" name="city" value="Montreal">
         </div>
+        <div class="row">
+            <span class="col-form-label"><i>Enter address without postal code *</i></span>
+        </div>
         <div class="form-group row">
-            <textarea class="form-control col-sm-9" id="address" name="address" placeholder="Address*" type="text" rows="2"></textarea>
+            <textarea autocomplete="off" class="form-control col-sm-9" id="address" name="address" placeholder="Address*" type="text" rows="2"></textarea>
         </div>
         <div class="form-group row">
             <label for="city" class="col-sm-2 col-form-label text-left">Company</label>
@@ -45,4 +48,9 @@
             <button class="btn btn-primary" type="submit">Submit</button>
         </div>
     </form>
+    <script>
+        function onChange(value) {
+        console.log('Value', value)
+        }
+    </script>
 {% endblock %}

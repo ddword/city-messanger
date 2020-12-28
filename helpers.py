@@ -54,11 +54,16 @@ def get_GPS(city, address):
     # Parse response
     try:
         res = response.json()
+        # print(f'GPS coordinates{res}')
+
+        if not res:
+            return 0
         return {
             "lat": res[0].get('lat'),
             "lon": res[0].get('lon'),
             "address": res[0].get('display_name'),
         }
+
     except (KeyError, TypeError, ValueError):
         return None
 
