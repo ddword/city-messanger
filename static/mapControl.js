@@ -24,9 +24,9 @@
     points.forEach(function(point){
         point = Array.from(point);
         /** @params longitude and latitude
-          * longitude = Number(point[3]) and latitude = Number(point[2])
+          * longitude = Number(point[1]) and latitude = Number(point[2])
           */
-        const marker = setMarker(Number(point[3]),Number(point[2]))
+        const marker = setMarker(Number(point[1]),Number(point[2]))
         markers.push(marker)
     })
     // console.log('Markers', markers)

@@ -33,7 +33,7 @@ class messageDB:
 
     # get list messages of user
     def get_messages(self):
-        sql = "SELECT title, category, message, latitude, longitude, address, organization, file FROM messages \
+        sql = "SELECT title, category, message, longitude, latitude, address, organization FROM messages \
         LEFT JOIN addresses ON messages.address_id = addresses.id \
         WHERE messages.user_id = :id"
         self.c.execute(sql, {"id": self.id})
@@ -69,7 +69,7 @@ class addressesDB:
 
     # get list of addresses
     def getAllAddresses(self):
-        self.c.execute("SELECT * FROM addresses")
+        self.c.execute("SELECT id, longitude, latitude, address, organization FROM addresses")
         return self.c.fetchall()
 
     # add new message to the messages list of user

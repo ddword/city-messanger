@@ -6,11 +6,13 @@
 
 {% block main %}
     <div class="row">
-        <h5>What happens?</h5>
+        <h3>What happens?</h3>
     </div>
     <form action="{{action}}" method="post">
         <div class="form-group row">
             <input autocomplete="off" autofocus class="form-control col-sm-6" id="title" name="title" placeholder="Title*" type="text">
+        </div>
+        <div class="form-group row">
             <label for="category" class="col-sm-2 col-form-label text-left">Category*:</label>
             <select autocomplete="off" autofocus class="form-control col-sm-2" id="category" name="category" onchange="onChange()">
                 {% for option in options %}
@@ -32,13 +34,13 @@
             <label for="city" class="col-sm-2 col-form-label text-left">Company</label>
             <input class="form-control col-sm-3" id="company" name="company">
         </div>
-        <div class="form-group row">
+        <!--<div class="form-group row">
             <label for="image">Choose image of issue:</label>
             <input type="file"
                    class="form-control-file"
                    id="image" name="image"
                    accept="image/png, image/jpeg">
-        </div>
+        </div>/-->
         <div class="form-group row">
             <button class="btn btn-primary" type="submit">Submit</button>
         </div>

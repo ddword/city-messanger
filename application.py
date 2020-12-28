@@ -209,10 +209,6 @@ def register():
         # User reached route via GET (as by clicking a link or via redirect)
         return render_template("register.html")
 
-# db.commit()
-# print(f'Total number of rows updated: {connect.total_changes}')
-#db.close()
-
 
 def errorhandler(e):
     """Handle error"""
